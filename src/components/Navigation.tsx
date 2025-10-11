@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { categories } from '@/data/catalog';
+import { useCart } from '@/context/CartContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X } from 'lucide-react';
 
@@ -12,9 +14,11 @@ export const Navigation = () => {
     { name: 'Collection', path: '/products' },
     { name: 'Heritage', path: '/about' },
     { name: 'Contact', path: '/contact' },
+    { name: 'Cart', path: '/cart' },
   ];
 
   const isActive = (path: string) => location.pathname === path;
+  const { count } = useCart();
 
   return (
     <motion.nav
@@ -62,8 +66,25 @@ export const Navigation = () => {
                 )}
               </Link>
             ))}
+            {categories.map(c => (
+              <Link key={c.slug} to={`/category/${c.slug}`} className="relative group">
+                <span className="text-sm tracking-wider uppercase transition-colors duration-300 text-luxury-cream/80 hover:text-luxury-gold">
+                  {c.name}
+                </span>
+              </Link>
+            ))}
           </div>
 
+          <div className="hidden md:flex items-center gap-6">
+            <Link to="/cart" className="relative group">
+              <span className="text-sm tracking-wider uppercase transition-colors duration-300 text-luxury-cream hover:text-luxury-gold">
+                Cart
+                {count > 0 && (
+                  <span className="ml-2 inline-flex items-center justify-center text-xs bg-luxury-gold text-luxury-noir rounded-full px-2 py-0.5">{count}</span>
+                )}
+              </span>
+            </Link>
+          </div>
           {/* Mobile Menu Button */}
           <button
             onClick={() => setIsOpen(!isOpen)}
@@ -101,6 +122,18 @@ export const Navigation = () => {
                     }`}
                   >
                     {item.name}
+                  </motion.div>
+                </Link>
+              ))}
+              <Link to="/cart" onClick={() => setIsOpen(false)} className="block">
+                <motion.div whileHover={{ x: 10 }} className="text-lg tracking-wider uppercase text-luxury-cream hover:text-luxury-gold">
+                  Cart {count > 0 ? `(${count})` : ''}
+                </motion.div>
+              </Link>
+              {categories.map(c => (
+                <Link key={c.slug} to={`/category/${c.slug}`} onClick={() => setIsOpen(false)} className="block">
+                  <motion.div whileHover={{ x: 10 }} className="text-lg tracking-wider uppercase text-luxury-cream/80 hover:text-luxury-gold">
+                    {c.name}
                   </motion.div>
                 </Link>
               ))}
